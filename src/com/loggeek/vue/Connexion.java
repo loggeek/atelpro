@@ -13,6 +13,7 @@ public class Connexion extends JFrame
 			try
 			{
 				Connexion frame = new Connexion();
+				frame.setTitle("Connexion");
 				frame.setVisible(true);
 			}
 			catch (Exception e)

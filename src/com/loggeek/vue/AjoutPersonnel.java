@@ -12,6 +12,7 @@ public class AjoutPersonnel extends JFrame
 			try
 			{
 				AjoutPersonnel frame = new AjoutPersonnel();
+				frame.setTitle("Ajouter un personnel");
 				frame.setVisible(true);
 			}
 			catch (Exception e)

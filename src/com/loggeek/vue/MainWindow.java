@@ -17,6 +17,7 @@ public class MainWindow extends JFrame
 			try
 			{
 				MainWindow frame = new MainWindow();
+				frame.setTitle("Logiciel de gestion pour MediaTek86");
 				frame.setVisible(true);
 			}
 			catch (Exception e)

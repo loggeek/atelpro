@@ -13,6 +13,7 @@ public class AjoutAbsence extends JFrame
 			try
 			{
 				AjoutAbsence frame = new AjoutAbsence();
+				frame.setTitle("Ajouter une absence");
 				frame.setVisible(true);
 			}
 			catch (Exception e)

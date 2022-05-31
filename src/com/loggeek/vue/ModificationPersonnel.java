@@ -13,6 +13,7 @@ public class ModificationPersonnel extends JFrame
 			try
 			{
 				ModificationPersonnel frame = new ModificationPersonnel();
+				frame.setTitle("Modifier un personnel");
 				frame.setVisible(true);
 			}
 			catch (Exception e)

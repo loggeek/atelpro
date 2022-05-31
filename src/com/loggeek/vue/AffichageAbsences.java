@@ -17,6 +17,7 @@ public class AffichageAbsences extends JFrame
 			try
 			{
 				AffichageAbsences frame = new AffichageAbsences();
+				frame.setTitle("Absences");
 				frame.setVisible(true);
 			}
 			catch (Exception e)
