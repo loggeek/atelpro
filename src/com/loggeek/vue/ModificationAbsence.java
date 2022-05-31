@@ -5,9 +5,17 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 
+/**
+ * Permet la modification des absences.
+ */
 public class ModificationAbsence extends JFrame
 {
-	public static void main(String[] args)
+	/**
+	 * Affiche la fenêtre.
+	 *
+	 * @param argv inutilisé
+	 */
+	public static void main(String[] argv)
 	{
 		EventQueue.invokeLater(() -> {
 			try
@@ -23,6 +31,9 @@ public class ModificationAbsence extends JFrame
 		});
 	}
 	
+	/**
+	 * Crée la fenêtre.
+	 */
 	public ModificationAbsence()
 	{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

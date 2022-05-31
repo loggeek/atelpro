@@ -4,9 +4,18 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 
+
+/**
+ * Permet l'ajout d'un membre du personnel.
+ */
 public class AjoutPersonnel extends JFrame
 {
-	public static void main(String[] args)
+	/**
+	 * Affiche la fenêtre.
+	 *
+	 * @param argv inutilisé
+	 */
+	public static void main(String[] argv)
 	{
 		EventQueue.invokeLater(() -> {
 			try
@@ -22,6 +31,9 @@ public class AjoutPersonnel extends JFrame
 		});
 	}
 	
+	/**
+	 * Crée la fenêtre.
+	 */
 	public AjoutPersonnel()
 	{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

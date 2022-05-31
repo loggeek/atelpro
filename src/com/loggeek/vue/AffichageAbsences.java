@@ -6,12 +6,20 @@ import javax.swing.table.*;
 import java.awt.*;
 
 
+/**
+ * Permet l'affichage et la gestion des absences.
+ */
 public class AffichageAbsences extends JFrame
 {
 	private final String[] colonnes = {"Début", "Fin", "Motif"};
 	private final DefaultTableModel modele;
 	
-	public static void main(String[] args)
+	/**
+	 * Affiche la fenêtre.
+	 *
+	 * @param argv inutilisé
+	 */
+	public static void main(String[] argv)
 	{
 		EventQueue.invokeLater(() -> {
 			try
@@ -27,6 +35,9 @@ public class AffichageAbsences extends JFrame
 		});
 	}
 	
+	/**
+	 * Crée la fenêtre.
+	 */
 	public AffichageAbsences()
 	{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -78,6 +89,11 @@ public class AffichageAbsences extends JFrame
 		btnSupprimerAbsence.addActionListener(event -> System.out.println("btnSupprimerAbsence"));
 	}
 	
+	/**
+	 * Met à jour des données de la table des absences.
+	 *
+	 * @param donnees les données à mettre dans la table
+	 */
 	public void majTable(String[][] donnees)
 	{
 		modele.setDataVector(donnees, colonnes);

@@ -5,9 +5,17 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 
+/**
+ * Permet la modification des membres du personnel.
+ */
 public class ModificationPersonnel extends JFrame
 {
-	public static void main(String[] args)
+	/**
+	 * Affiche la fenêtre.
+	 *
+	 * @param argv inutilisé
+	 */
+	public static void main(String[] argv)
 	{
 		EventQueue.invokeLater(() -> {
 			try
@@ -23,6 +31,9 @@ public class ModificationPersonnel extends JFrame
 		});
 	}
 	
+	/**
+	 * Crée la fenêtre.
+	 */
 	public ModificationPersonnel()
 	{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

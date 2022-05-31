@@ -6,12 +6,20 @@ import javax.swing.table.*;
 import java.awt.*;
 
 
+/**
+ * Fenêtre principale de l'application.
+ */
 public class MainWindow extends JFrame
 {
 	private final String[] colonnes = {"Identifiant", "Nom", "Prénom", "N° de Téléphone", "Adresse Mail", "Service"};
 	private final DefaultTableModel modele;
 	
-	public static void main(String[] args)
+	/**
+	 * Affiche la fenêtre.
+	 *
+	 * @param argv inutilisé
+	 */
+	public static void main(String[] argv)
 	{
 		EventQueue.invokeLater(() -> {
 			try
@@ -27,6 +35,9 @@ public class MainWindow extends JFrame
 		});
 	}
 	
+	/**
+	 * Crée la fenêtre.
+	 */
 	public MainWindow()
 	{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -86,6 +97,11 @@ public class MainWindow extends JFrame
 		btnAfficherAbsences.addActionListener(event -> System.out.println("btnAfficherAbsences"));
 	}
 	
+	/**
+	 * Met à jour les données de la table des absences.
+	 *
+	 * @param donnees les données à mettre dans la table
+	 */
 	public void majTable(String[][] donnees)
 	{
 		modele.setDataVector(donnees, colonnes);

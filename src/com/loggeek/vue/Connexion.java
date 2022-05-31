@@ -5,8 +5,16 @@ import javax.swing.border.*;
 import java.awt.*;
 
 
+/**
+ * Permet la connexion d'un responsable.
+ */
 public class Connexion extends JFrame
 {
+	/**
+	 * Affiche la fenêtre.
+	 *
+	 * @param argv inutilisé
+	 */
 	public static void main(String[] argv)
 	{
 		EventQueue.invokeLater(() -> {
@@ -23,6 +31,9 @@ public class Connexion extends JFrame
 		});
 	}
 	
+	/**
+	 * Crée la fenêtre.
+	 */
 	public Connexion()
 	{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
