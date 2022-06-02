@@ -184,16 +184,29 @@ public class AccesDonnees
 	}
 	
 	/**
-	 * Supprime un personnel de la base de données.
+	 * Supprime un personnel de la base de données, ainsi que ses absences.
 	 *
 	 * @param id l'identifiant du personnel
 	 */
 	public static void supprimerPersonnel(int id)
 	{
-		String sql = "DELETE FROM personnel WHERE idpersonnel = ?";
+		// Suppression des absences
+		
+		String sql = "DELETE FROM absence WHERE personnel = ?";
 		
 		ConnexionBDD connexion = ConnexionBDD.getInstance(url, login, pwd);
 		ArrayList<Object> params = new ArrayList<>();
+		
+		params.add(id);
+		
+		connexion.reqUpdate(sql, params);
+		
+		// Suppression du personnel
+		
+		sql = "DELETE FROM personnel WHERE idpersonnel = ?";
+		
+		connexion = ConnexionBDD.getInstance(url, login, pwd);
+		params = new ArrayList<>();
 		
 		params.add(id);
 		
