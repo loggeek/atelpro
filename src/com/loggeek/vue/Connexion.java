@@ -4,6 +4,9 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 
+import com.loggeek.controleur.Interactions;
+import com.loggeek.modele.metier.Responsable;
+
 
 /**
  * Permet la connexion d'un responsable.
@@ -17,18 +20,16 @@ public class Connexion extends JFrame
 	 */
 	public static void main(String[] argv)
 	{
-		EventQueue.invokeLater(() -> {
-			try
-			{
-				Connexion frame = new Connexion();
-				frame.setTitle("Connexion");
-				frame.setVisible(true);
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		});
+		try
+		{
+			Connexion frame = new Connexion();
+			frame.setTitle("Connexion");
+			frame.setVisible(true);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -87,6 +88,12 @@ public class Connexion extends JFrame
 		gbc_btnValider.gridy = 2;
 		contentPane.add(btnValider, gbc_btnValider);
 		
-		btnValider.addActionListener(event -> System.out.println("btnValider"));
+		btnValider.addActionListener(event -> Interactions.connexion(
+				this,
+				new Responsable(
+						fieldLogin.getText(),
+						new String(fieldMotDePasse.getPassword())
+				)
+		));
 	}
 }

@@ -1,8 +1,16 @@
 package com.loggeek.vue;
 
+import com.loggeek.controleur.*;
+import com.loggeek.modele.metier.*;
+
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+
+import static com.loggeek.controleur.Extractions.getNomsServices;
+import static com.loggeek.modele.dal.AccesDonnees.*;
 
 
 /**
@@ -17,18 +25,17 @@ public class AjoutPersonnel extends JFrame
 	 */
 	public static void main(String[] argv)
 	{
-		EventQueue.invokeLater(() -> {
-			try
-			{
-				AjoutPersonnel frame = new AjoutPersonnel();
-				frame.setTitle("Ajouter un personnel");
-				frame.setVisible(true);
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		});
+		try
+		{
+			AjoutPersonnel frame = new AjoutPersonnel();
+			frame.setTitle("Ajouter un personnel");
+			frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+			frame.setVisible(true);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -124,7 +131,9 @@ public class AjoutPersonnel extends JFrame
 		gbc_lblService.gridy = 4;
 		contentPane.add(lblService, gbc_lblService);
 		
-		JComboBox<String> comboBoxService = new JComboBox<>();
+		JComboBox<String> comboBoxService = new JComboBox<>(
+				getNomsServices(getServices()).toArray(String[]::new)
+		);
 		GridBagConstraints gbc_comboBoxService = new GridBagConstraints();
 		gbc_comboBoxService.insets = new Insets(0, 0, 5, 0);
 		gbc_comboBoxService.fill = GridBagConstraints.HORIZONTAL;
@@ -139,6 +148,24 @@ public class AjoutPersonnel extends JFrame
 		gbc_btnValider.gridy = 5;
 		contentPane.add(btnValider, gbc_btnValider);
 		
-		btnValider.addActionListener(event -> System.out.println("btnValider"));
+		btnValider.addActionListener(event -> {
+			ArrayList<Integer> personnelIDs = getPersonnelIDs();
+			if (personnelIDs.isEmpty()) personnelIDs.add(0);
+			
+			Interactions.validationAjoutPersonnel(
+					this,
+					new Personnel(
+							Collections.max(personnelIDs) + 1,
+							fieldNom.getText(),
+							fieldPrenom.getText(),
+							fieldTel.getText(),
+							fieldMail.getText(),
+							new Service(
+									Extractions.getServiceNomVersID((String) comboBoxService.getSelectedItem()),
+									(String) comboBoxService.getSelectedItem()
+							)
+					)
+			);
+		});
 	}
 }

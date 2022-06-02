@@ -1,8 +1,19 @@
 package com.loggeek.vue;
 
+import com.loggeek.controleur.Extractions;
+import com.loggeek.controleur.Interactions;
+import com.loggeek.modele.metier.*;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+
+import static com.loggeek.controleur.Extractions.getNomsMotifs;
+import static com.loggeek.modele.dal.AccesDonnees.getMotifs;
+import static com.loggeek.modele.dal.AccesDonnees.getPersonnelIDs;
 
 
 /**
@@ -17,24 +28,44 @@ public class AjoutAbsence extends JFrame
 	 */
 	public static void main(String[] argv)
 	{
-		EventQueue.invokeLater(() -> {
-			try
-			{
-				AjoutAbsence frame = new AjoutAbsence();
-				frame.setTitle("Ajouter une absence");
-				frame.setVisible(true);
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		});
+		try
+		{
+			AjoutAbsence frame = new AjoutAbsence(null);
+			frame.setTitle("Ajouter une absence");
+			frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+			frame.setVisible(true);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Affiche la fenêtre.
+	 * Recommander pour usage normal.
+	 *
+	 * @param personnel le personnel concerné
+	 */
+	public static void main(Personnel personnel)
+	{
+		try
+		{
+			AjoutAbsence frame = new AjoutAbsence(personnel);
+			frame.setTitle("Ajouter une absence");
+			frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+			frame.setVisible(true);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	/**
 	 * Crée la fenêtre.
 	 */
-	public AjoutAbsence()
+	public AjoutAbsence(Personnel personnel)
 	{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -90,7 +121,9 @@ public class AjoutAbsence extends JFrame
 		gbc_lblMotif.gridy = 2;
 		contentPane.add(lblMotif, gbc_lblMotif);
 		
-		JComboBox<String> comboBoxMotif = new JComboBox<>();
+		JComboBox<String> comboBoxMotif = new JComboBox<>(
+				getNomsMotifs(getMotifs()).toArray(String[]::new)
+		);
 		GridBagConstraints gbc_comboBoxMotif = new GridBagConstraints();
 		gbc_comboBoxMotif.insets = new Insets(0, 0, 5, 0);
 		gbc_comboBoxMotif.fill = GridBagConstraints.HORIZONTAL;
@@ -105,6 +138,48 @@ public class AjoutAbsence extends JFrame
 		gbc_btnValider.gridy = 3;
 		contentPane.add(btnValider, gbc_btnValider);
 		
-		btnValider.addActionListener(event -> System.out.println("btnValider"));
+		btnValider.addActionListener(event -> {
+			ArrayList<Integer> personnelIDs = getPersonnelIDs();
+			if (personnelIDs.isEmpty()) personnelIDs.add(0);
+			
+			SimpleDateFormat dateFmtFr = new SimpleDateFormat("dd/MM/yyyy");
+			
+			if (fieldDebut.getText().isEmpty() || fieldFin.getText().isEmpty())
+			{
+				JOptionPane.showMessageDialog(
+						this,
+						"Vous avez oublié un champ!",
+						"Erreur",
+						JOptionPane.WARNING_MESSAGE
+				);
+				return;
+			}
+			
+			try
+			{
+				Interactions.validationAjoutAbsence(
+						this,
+						personnel,
+						new Absence(
+								dateFmtFr.parse(fieldDebut.getText()),
+								dateFmtFr.parse(fieldFin.getText()),
+								personnel,
+								new Motif(
+										Extractions.getMotifNomVersID((String) comboBoxMotif.getSelectedItem()),
+										(String) comboBoxMotif.getSelectedItem()
+								)
+						)
+				);
+			}
+			catch (ParseException e)
+			{
+				JOptionPane.showMessageDialog(
+						this,
+						"La date rentrée est invalide!",
+						"Erreur",
+						JOptionPane.WARNING_MESSAGE
+				);
+			}
+		});
 	}
 }

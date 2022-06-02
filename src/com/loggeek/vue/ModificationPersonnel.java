@@ -1,8 +1,17 @@
 package com.loggeek.vue;
 
+import com.loggeek.controleur.Extractions;
+import com.loggeek.controleur.Interactions;
+import com.loggeek.modele.metier.Personnel;
+import com.loggeek.modele.metier.Service;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.ArrayList;
+
+import static com.loggeek.controleur.Extractions.getNomsServices;
+import static com.loggeek.modele.dal.AccesDonnees.getServices;
 
 
 /**
@@ -13,28 +22,29 @@ public class ModificationPersonnel extends JFrame
 	/**
 	 * Affiche la fenêtre.
 	 *
-	 * @param argv inutilisé
+	 * @param argv contient les données du champ par défaut
 	 */
 	public static void main(String[] argv)
 	{
-		EventQueue.invokeLater(() -> {
-			try
-			{
-				ModificationPersonnel frame = new ModificationPersonnel();
-				frame.setTitle("Modifier un personnel");
-				frame.setVisible(true);
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		});
+		try
+		{
+			ModificationPersonnel frame = new ModificationPersonnel(argv);
+			frame.setTitle("Modifier un personnel");
+			frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+			frame.setVisible(true);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	/**
 	 * Crée la fenêtre.
+	 *
+	 * @param donnees les données du champ par défaut
 	 */
-	public ModificationPersonnel()
+	public ModificationPersonnel(String[] donnees)
 	{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -56,7 +66,7 @@ public class ModificationPersonnel extends JFrame
 		gbc_lblNom.gridy = 0;
 		contentPane.add(lblNom, gbc_lblNom);
 		
-		JTextField fieldNom = new JTextField();
+		JTextField fieldNom = new JTextField(donnees[1]);
 		GridBagConstraints gbc_fieldNom = new GridBagConstraints();
 		gbc_fieldNom.insets = new Insets(0, 0, 5, 0);
 		gbc_fieldNom.fill = GridBagConstraints.HORIZONTAL;
@@ -73,7 +83,7 @@ public class ModificationPersonnel extends JFrame
 		gbc_lblPrenom.gridy = 1;
 		contentPane.add(lblPrenom, gbc_lblPrenom);
 		
-		JTextField fieldPrenom = new JTextField();
+		JTextField fieldPrenom = new JTextField(donnees[2]);
 		GridBagConstraints gbc_fieldPrenom = new GridBagConstraints();
 		gbc_fieldPrenom.insets = new Insets(0, 0, 5, 0);
 		gbc_fieldPrenom.fill = GridBagConstraints.HORIZONTAL;
@@ -90,7 +100,7 @@ public class ModificationPersonnel extends JFrame
 		gbc_lblTel.gridy = 2;
 		contentPane.add(lblTel, gbc_lblTel);
 		
-		JTextField fieldTel = new JTextField();
+		JTextField fieldTel = new JTextField(donnees[3]);
 		GridBagConstraints gbc_fieldTel = new GridBagConstraints();
 		gbc_fieldTel.insets = new Insets(0, 0, 5, 0);
 		gbc_fieldTel.fill = GridBagConstraints.HORIZONTAL;
@@ -107,7 +117,7 @@ public class ModificationPersonnel extends JFrame
 		gbc_lblMail.gridy = 3;
 		contentPane.add(lblMail, gbc_lblMail);
 		
-		JTextField fieldMail = new JTextField();
+		JTextField fieldMail = new JTextField(donnees[4]);
 		GridBagConstraints gbc_fieldMail = new GridBagConstraints();
 		gbc_fieldMail.insets = new Insets(0, 0, 5, 0);
 		gbc_fieldMail.fill = GridBagConstraints.HORIZONTAL;
@@ -124,7 +134,11 @@ public class ModificationPersonnel extends JFrame
 		gbc_lblService.gridy = 4;
 		contentPane.add(lblService, gbc_lblService);
 		
-		JComboBox<String> comboBoxService = new JComboBox<>();
+		ArrayList<String> services = getNomsServices(getServices());
+		JComboBox<String> comboBoxService = new JComboBox<>(
+				services.toArray(String[]::new)
+		);
+		comboBoxService.setSelectedIndex(services.indexOf(donnees[5]));
 		GridBagConstraints gbc_comboBoxService = new GridBagConstraints();
 		gbc_comboBoxService.insets = new Insets(0, 0, 5, 0);
 		gbc_comboBoxService.fill = GridBagConstraints.HORIZONTAL;
@@ -139,6 +153,19 @@ public class ModificationPersonnel extends JFrame
 		gbc_btnValider.gridy = 5;
 		contentPane.add(btnValider, gbc_btnValider);
 		
-		btnValider.addActionListener(event -> System.out.println("btnValider"));
+		btnValider.addActionListener(event -> Interactions.validationModificationPersonnel(
+				this,
+				new Personnel(
+						Integer.parseInt(donnees[0]),
+						fieldNom.getText(),
+						fieldPrenom.getText(),
+						fieldTel.getText(),
+						fieldMail.getText(),
+						new Service(
+								Extractions.getServiceNomVersID((String) comboBoxService.getSelectedItem()),
+								(String) comboBoxService.getSelectedItem()
+						)
+				)
+		));
 	}
 }

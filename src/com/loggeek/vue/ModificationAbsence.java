@@ -1,8 +1,21 @@
 package com.loggeek.vue;
 
+import com.loggeek.controleur.Extractions;
+import com.loggeek.controleur.Interactions;
+import com.loggeek.modele.metier.Absence;
+import com.loggeek.modele.metier.Motif;
+import com.loggeek.modele.metier.Personnel;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+
+import static com.loggeek.controleur.Extractions.getNomsMotifs;
+import static com.loggeek.modele.dal.AccesDonnees.*;
 
 
 /**
@@ -17,24 +30,49 @@ public class ModificationAbsence extends JFrame
 	 */
 	public static void main(String[] argv)
 	{
-		EventQueue.invokeLater(() -> {
-			try
-			{
-				ModificationAbsence frame = new ModificationAbsence();
-				frame.setTitle("Modifier une absence");
-				frame.setVisible(true);
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		});
+		try
+		{
+			ModificationAbsence frame = new ModificationAbsence(argv, null);
+			frame.setTitle("Modifier une absence");
+			frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+			frame.setVisible(true);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	/**
-	 * Crée la fenêtre.
+	 * Affiche la fenêtre.
+	 *
+	 * @param donnees les donnees de l'absence
+	 * @param personnel le personnel concerné
 	 */
-	public ModificationAbsence()
+	public static void main(String[] donnees, Personnel personnel)
+	{
+		try
+		{
+			ModificationAbsence frame = new ModificationAbsence(donnees, personnel);
+			frame.setTitle("Modifier une absence");
+			frame.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+			frame.setVisible(true);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	Date datedebutOrig = null;
+	
+	/**
+	 * Crée la fenêtre.
+	 *
+	 * @param donnees les donnees de l'absence
+	 * @param personnel le personnel concerné
+	 */
+	public ModificationAbsence(String[] donnees, Personnel personnel)
 	{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -56,7 +94,7 @@ public class ModificationAbsence extends JFrame
 		gbc_lblDebut.gridy = 0;
 		contentPane.add(lblDebut, gbc_lblDebut);
 		
-		JTextField fieldDebut = new JTextField();
+		JTextField fieldDebut = new JTextField(donnees[0]);
 		GridBagConstraints gbc_fieldDebut = new GridBagConstraints();
 		gbc_fieldDebut.insets = new Insets(0, 0, 5, 0);
 		gbc_fieldDebut.fill = GridBagConstraints.HORIZONTAL;
@@ -64,6 +102,16 @@ public class ModificationAbsence extends JFrame
 		gbc_fieldDebut.gridy = 0;
 		contentPane.add(fieldDebut, gbc_fieldDebut);
 		fieldDebut.setColumns(10);
+		
+		try
+		{
+			SimpleDateFormat dateFmtFr = new SimpleDateFormat("dd/MM/yyyy");
+			datedebutOrig = dateFmtFr.parse(donnees[0]);
+		}
+		catch (ParseException e)
+		{
+			// Ne doit jamais arriver
+		}
 		
 		JLabel lblFin = new JLabel("Fin");
 		GridBagConstraints gbc_lblFin = new GridBagConstraints();
@@ -73,7 +121,7 @@ public class ModificationAbsence extends JFrame
 		gbc_lblFin.gridy = 1;
 		contentPane.add(lblFin, gbc_lblFin);
 		
-		JTextField fieldFin = new JTextField();
+		JTextField fieldFin = new JTextField(donnees[1]);
 		GridBagConstraints gbc_fieldFin = new GridBagConstraints();
 		gbc_fieldFin.insets = new Insets(0, 0, 5, 0);
 		gbc_fieldFin.fill = GridBagConstraints.HORIZONTAL;
@@ -90,7 +138,11 @@ public class ModificationAbsence extends JFrame
 		gbc_lblMotif.gridy = 2;
 		contentPane.add(lblMotif, gbc_lblMotif);
 		
-		JComboBox<String> comboBoxMotif = new JComboBox<>();
+		ArrayList<String> motifs = getNomsMotifs(getMotifs());
+		JComboBox<String> comboBoxMotif = new JComboBox<>(
+				motifs.toArray(String[]::new)
+		);
+		comboBoxMotif.setSelectedIndex(motifs.indexOf(donnees[2]));
 		GridBagConstraints gbc_comboBoxMotif = new GridBagConstraints();
 		gbc_comboBoxMotif.insets = new Insets(0, 0, 5, 0);
 		gbc_comboBoxMotif.fill = GridBagConstraints.HORIZONTAL;
@@ -105,6 +157,49 @@ public class ModificationAbsence extends JFrame
 		gbc_btnValider.gridy = 3;
 		contentPane.add(btnValider, gbc_btnValider);
 		
-		btnValider.addActionListener(event -> System.out.println("btnValider"));
+		btnValider.addActionListener(event -> {
+			ArrayList<Integer> personnelIDs = getPersonnelIDs();
+			if (personnelIDs.isEmpty()) personnelIDs.add(0);
+			
+			SimpleDateFormat dateFmtFr = new SimpleDateFormat("dd/MM/yyyy");
+			
+			if (fieldDebut.getText().isEmpty() || fieldFin.getText().isEmpty())
+			{
+				JOptionPane.showMessageDialog(
+						this,
+						"Vous avez oublié un champ!",
+						"Erreur",
+						JOptionPane.WARNING_MESSAGE
+				);
+				return;
+			}
+			
+			try
+			{
+				Interactions.validationModificationAbsence(
+						this,
+						datedebutOrig,
+						personnel,
+						new Absence(
+								dateFmtFr.parse(fieldDebut.getText()),
+								dateFmtFr.parse(fieldFin.getText()),
+								personnel,
+								new Motif(
+										Extractions.getMotifNomVersID((String) comboBoxMotif.getSelectedItem()),
+										(String) comboBoxMotif.getSelectedItem()
+								)
+						)
+				);
+			}
+			catch (ParseException e)
+			{
+				JOptionPane.showMessageDialog(
+						this,
+						"La date rentrée est invalide!",
+						"Erreur",
+						JOptionPane.WARNING_MESSAGE
+				);
+			}
+		});
 	}
 }

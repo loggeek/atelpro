@@ -1,5 +1,7 @@
 package com.loggeek.vue;
 
+import com.loggeek.controleur.Interactions;
+
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.table.*;
@@ -9,36 +11,48 @@ import java.awt.*;
 /**
  * Fenêtre principale de l'application.
  */
-public class MainWindow extends JFrame
+public class FenetrePrincipale extends JFrame
 {
 	private final String[] colonnes = {"Identifiant", "Nom", "Prénom", "N° de Téléphone", "Adresse Mail", "Service"};
 	private final DefaultTableModel modele;
+	
+	private static FenetrePrincipale frame = null;
 	
 	/**
 	 * Affiche la fenêtre.
 	 *
 	 * @param argv inutilisé
 	 */
+	
 	public static void main(String[] argv)
 	{
-		EventQueue.invokeLater(() -> {
-			try
-			{
-				MainWindow frame = new MainWindow();
-				frame.setTitle("Logiciel de gestion pour MediaTek86");
-				frame.setVisible(true);
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
-		});
+		try
+		{
+			frame = new FenetrePrincipale();
+			frame.setTitle("Logiciel de gestion pour MediaTek86");
+			frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+			frame.setVisible(true);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Permet de récupérer une référence à la fenêtre principale.
+	 *
+	 * @return la fenêtre principale
+	 */
+	public static FenetrePrincipale getFenetre()
+	{
+		return frame;
 	}
 	
 	/**
 	 * Crée la fenêtre.
 	 */
-	public MainWindow()
+	public FenetrePrincipale()
 	{
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
@@ -52,7 +66,13 @@ public class MainWindow extends JFrame
 		gbl_contentPane.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE};
 		contentPane.setLayout(gbl_contentPane);
 		
-		modele = new DefaultTableModel(null, colonnes);
+		modele = new DefaultTableModel(null, colonnes)
+		{
+			@Override public boolean isCellEditable(int row, int column)
+			{
+				return false;
+			}
+		};
 		JTable table = new JTable(modele);
 		JScrollPane pane = new JScrollPane(table);
 		GridBagConstraints gbc_pane = new GridBagConstraints();
@@ -62,6 +82,9 @@ public class MainWindow extends JFrame
 		gbc_pane.gridx = 0;
 		gbc_pane.gridy = 0;
 		contentPane.add(pane, gbc_pane);
+		
+		table.setAutoCreateRowSorter(true);
+		this.majTable();
 		
 		JButton btnAjouterPersonnel = new JButton("Ajouter Personnel");
 		GridBagConstraints gbc_btnAjouterPersonnel = new GridBagConstraints();
@@ -91,20 +114,65 @@ public class MainWindow extends JFrame
 		gbc_btnAfficherAbsences.gridy = 3;
 		contentPane.add(btnAfficherAbsences, gbc_btnAfficherAbsences);
 		
-		btnAjouterPersonnel.addActionListener(event -> System.out.println("btnAjouterPersonnel"));
-		btnModifierPersonnel.addActionListener(event -> System.out.println("btnModifierPersonnel"));
-		btnSupprimerPersonnel.addActionListener(event -> System.out.println("btnSupprimerPersonnel"));
-		btnAfficherAbsences.addActionListener(event -> System.out.println("btnAfficherAbsences"));
+		btnAjouterPersonnel.addActionListener(event -> AjoutPersonnel.main(null));
+		btnModifierPersonnel.addActionListener(event -> {
+			if (table.getSelectedRow() != -1)
+				ModificationPersonnel.main(new String[] {
+						table.getValueAt(table.getSelectedRow(), 0).toString(),
+						table.getValueAt(table.getSelectedRow(), 1).toString(),
+						table.getValueAt(table.getSelectedRow(), 2).toString(),
+						table.getValueAt(table.getSelectedRow(), 3).toString(),
+						table.getValueAt(table.getSelectedRow(), 4).toString(),
+						table.getValueAt(table.getSelectedRow(), 5).toString(),
+				});
+			else
+				JOptionPane.showMessageDialog(
+						this,
+						"Aucun membre du personnel a été sélectionné!",
+						"Erreur",
+						JOptionPane.WARNING_MESSAGE
+				);
+		});
+		btnSupprimerPersonnel.addActionListener(event -> {
+			if (table.getSelectedRow() != -1)
+				Interactions.supprimerPersonnel(
+						this,
+						Integer.parseInt(table.getValueAt(table.getSelectedRow(), 0).toString())
+				);
+			else
+				JOptionPane.showMessageDialog(
+						this,
+						"Aucun membre du personnel a été sélectionné!",
+						"Erreur",
+						JOptionPane.WARNING_MESSAGE
+				);
+		});
+		btnAfficherAbsences.addActionListener(event -> {
+			if (table.getSelectedRow() != -1)
+				AffichageAbsences.main(new String[] {
+						table.getValueAt(table.getSelectedRow(), 0).toString(),
+						table.getValueAt(table.getSelectedRow(), 1).toString(),
+						table.getValueAt(table.getSelectedRow(), 2).toString(),
+						table.getValueAt(table.getSelectedRow(), 3).toString(),
+						table.getValueAt(table.getSelectedRow(), 4).toString(),
+						table.getValueAt(table.getSelectedRow(), 5).toString(),
+				});
+			else
+				JOptionPane.showMessageDialog(
+						this,
+						"Aucun membre du personnel a été sélectionné!",
+						"Erreur",
+						JOptionPane.WARNING_MESSAGE
+				);
+		});
 	}
 	
 	/**
 	 * Met à jour les données de la table des absences.
-	 *
-	 * @param donnees les données à mettre dans la table
 	 */
-	public void majTable(String[][] donnees)
+	public void majTable()
 	{
-		modele.setDataVector(donnees, colonnes);
+		modele.setDataVector(Interactions.majTablePersonnels(), colonnes);
 		modele.fireTableDataChanged();
 	}
 }

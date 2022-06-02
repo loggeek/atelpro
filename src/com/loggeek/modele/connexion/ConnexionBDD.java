@@ -1,5 +1,6 @@
 package com.loggeek.modele.connexion;
 
+import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -31,7 +32,12 @@ public class ConnexionBDD
 			}
 			catch (SQLException e)
 			{
-				System.err.println("Erreur fatale: " + e.getMessage());
+				JOptionPane.showMessageDialog(
+						null,
+						e.getLocalizedMessage(),
+						"Erreur fatale",
+						JOptionPane.ERROR_MESSAGE
+				);
 				System.exit(-1);
 			}
 		}
@@ -73,7 +79,12 @@ public class ConnexionBDD
 			}
 			catch (SQLException e)
 			{
-				System.err.println(e.getMessage());
+				JOptionPane.showMessageDialog(
+						null,
+						e.getLocalizedMessage(),
+						"Erreur",
+						JOptionPane.ERROR_MESSAGE
+				);
 			}
 		}
 	}
@@ -101,7 +112,12 @@ public class ConnexionBDD
 			}
 			catch (SQLException e)
 			{
-				System.err.println(e.getMessage());
+				JOptionPane.showMessageDialog(
+						null,
+						e.getLocalizedMessage(),
+						"Erreur",
+						JOptionPane.ERROR_MESSAGE
+				);
 			}
 		}
 	}
@@ -120,6 +136,12 @@ public class ConnexionBDD
 		}
 		catch (SQLException e)
 		{
+			JOptionPane.showMessageDialog(
+					null,
+					e.getLocalizedMessage(),
+					"Erreur",
+					JOptionPane.ERROR_MESSAGE
+			);
 			return false;
 		}
 	}
@@ -139,6 +161,12 @@ public class ConnexionBDD
 		}
 		catch (SQLException e)
 		{
+			JOptionPane.showMessageDialog(
+					null,
+					e.getLocalizedMessage(),
+					"Erreur",
+					JOptionPane.ERROR_MESSAGE
+			);
 			return null;
 		}
 	}
@@ -156,6 +184,12 @@ public class ConnexionBDD
 			}
 			catch (SQLException e)
 			{
+				JOptionPane.showMessageDialog(
+						null,
+						e.getLocalizedMessage(),
+						"Erreur",
+						JOptionPane.ERROR_MESSAGE
+				);
 				resultSet = null;
 			}
 		}
